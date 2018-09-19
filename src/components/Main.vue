@@ -109,7 +109,7 @@ export default class Main extends Vue {
   position: relative;
   // background: #7db9de; // 勿忘草
   background: #fffffb;
-  padding: 60px 0 45px 0;
+  padding: 60px 0 55px 0;
   overflow: hidden;
   background-image: url('../assets/images/texture.png');
   .chat-list {
@@ -197,8 +197,8 @@ export default class Main extends Vue {
       margin: 0;
       width: 100%;
       li {
-        height: 35px;
-        line-height: 35px;
+        height: 44px;
+        line-height: 44px;
         padding: 0 15px;
         margin: 0;
         list-style: none;
@@ -222,8 +222,8 @@ export default class Main extends Vue {
   .input {
     position: absolute;
     background: #fff;
-    height: 40px;
-    line-height: 40px;
+    height: 50px;
+    line-height: 50px;
     padding: 0 10px;
     box-sizing: border-box;
     bottom: 0;
