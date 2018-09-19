@@ -1,9 +1,8 @@
 <template>
-  <div class="content">
+  <section class="content">
     <div class="title">{{inputing ? '对方正在输入……' : '武协领土'}}</div>
-    <div class="input" @click="saySome">{{inputing ? '对方打字中……' : '说点什么吧...'}}</div>
     <div class="talk" v-show="talkShow" @click="talkShow = false">
-      <ul>
+      <ul :class="{active: talkShow}">
         <li v-for="(item, index) in options" :key="index" @click="talkData(item)">{{item.value}}</li>
       </ul>
     </div>
@@ -19,7 +18,8 @@
         </span>
       </li>
     </ul>
-  </div>
+    <div class="input" @click="saySome">{{inputing ? '对方打字中……' : '说点什么吧...'}}</div>
+  </section>
 </template>
 
 <script lang="ts">
@@ -109,8 +109,9 @@ export default class Main extends Vue {
   position: relative;
   // background: #7db9de; // 勿忘草
   background: #fffffb;
-  padding: 60px 0 55px 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background-image: url('../assets/images/texture.png');
   .chat-list {
     padding: 0;
@@ -120,6 +121,7 @@ export default class Main extends Vue {
     overflow: auto;
     padding: 0 15px;
     box-sizing: border-box;
+    flex: 1;
     &::-webkit-scrollbar {
       display: none;
     }
@@ -168,7 +170,6 @@ export default class Main extends Vue {
     }
   }
   .title {
-    position: absolute;
     background: linear-gradient(to right, #7b90d2, #2ea9df, #7b90d2);
     color: #fff;
     height: 45px;
@@ -177,18 +178,15 @@ export default class Main extends Vue {
     box-shadow: 0 0 5px #f1f1f1;
     border-radius: 2px;
     text-align: center;
-    left: 0;
-    right: 0;
-    top: 0;
   }
   .talk {
     position: absolute;
     left: 0;
     right: 0;
     top: 0;
-    bottom: 40px;
+    bottom: 50px;
     background: rgba(0, 0, 0, 0.4);
-    z-index: 5;
+    z-index: 15;
     ul {
       position: absolute;
       bottom: 0;
@@ -196,11 +194,18 @@ export default class Main extends Vue {
       padding: 0;
       margin: 0;
       width: 100%;
+      transform: translateY(100%);
+      transition: 0.3s all ease;
+      &.active {
+        transform: translateY(0);
+        transition: 0.3s all ease;
+      }
       li {
         height: 44px;
         line-height: 44px;
         padding: 0 15px;
         margin: 0;
+        font-size: 14px;
         list-style: none;
         color: #2760bd;
         display: block;
@@ -220,15 +225,11 @@ export default class Main extends Vue {
     }
   }
   .input {
-    position: absolute;
     background: #fff;
     height: 50px;
     line-height: 50px;
     padding: 0 10px;
     box-sizing: border-box;
-    bottom: 0;
-    left: 0;
-    right: 0;
     color: #888;
     font-size: 13px;
     box-shadow: 0 0 3px @themeColor;
