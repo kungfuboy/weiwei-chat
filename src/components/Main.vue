@@ -1,6 +1,6 @@
 <template>
   <section class="content">
-    <div class="title">{{inputing ? '对方正在输入……' : '武协领土'}}</div>
+    <div class="title">{{inputing ? '对方正在输入……' : '武协小筑'}}</div>
     <div class="talk" v-show="talkShow" @click="talkShow = false">
       <ul :class="{active: talkShow}">
         <li v-for="(item, index) in options" :key="index" @click="talkData(item)">{{item.value}}</li>
