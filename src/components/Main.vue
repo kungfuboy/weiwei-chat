@@ -1,6 +1,6 @@
 <template>
   <section class="content">
-    <div class="title">{{inputing ? '对方正在输入……' : '武协小筑'}}</div>
+    <div class="title">{{inputing ? '对方正在输入……' : '武协小筑'}}<i @click="shareLink()"></i></div>
     <div class="talk" v-show="talkShow" @click="talkShow = false">
       <ul :class="{active: talkShow}">
         <li v-for="(item, index) in options" :key="index" @click="talkData(item)">{{item.value}}</li>
@@ -19,6 +19,7 @@
       </li>
     </ul>
     <div class="input" @click="saySome">{{inputing ? '对方打字中……' : '说点什么吧...'}}</div>
+   <textarea id="link" class="link"></textarea>
   </section>
 </template>
 
@@ -81,6 +82,17 @@ export default class Main extends Vue {
     this.talkArr.push(data)
   }
 
+  private shareLink(): void {
+    // 生成拼接链接
+    const link = 'www'
+    // 复制到剪贴板
+    const input: any = document.getElementById('link')
+    input.value = link // 修改文本框的内容
+    input.select() // 选中文本
+    document.execCommand('copy') // 执行浏览器复制命令
+    console.log('复制成功')
+  }
+
   private updateScroll(): void {
     const $dom: any = this.$refs.chat
     const distance = $dom.scrollHeight - $dom.offsetHeight
@@ -98,7 +110,9 @@ export default class Main extends Vue {
 
 <style scoped lang="less">
 @themeColor: #7b90d2;
+@import '../assets/styles/chat.less';
 @import '../assets/styles/peopleChat.less';
+@import '../assets/styles/animate.less';
 
 .content {
   margin: auto;
@@ -113,62 +127,6 @@ export default class Main extends Vue {
   display: flex;
   flex-direction: column;
   background-image: url('../assets/images/texture.png');
-  .chat-list {
-    padding: 0;
-    font-size: 13px;
-    margin: 0;
-    height: 100%;
-    overflow: auto;
-    padding: 0 15px;
-    box-sizing: border-box;
-    flex: 1;
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    li {
-      list-style: none;
-      display: flex;
-      overflow: auto;
-      padding: 15px 0 10px 0;
-      position: relative;
-      &:before {
-        position: absolute;
-        top: 0;
-        font-size: 12px;
-        color: #006284; // 缥
-        z-index: 5;
-        display: block;
-        width: auto;
-      }
-      > span {
-        padding: 10px 15px;
-        max-width: 65%;
-        display: inline-block;
-        box-shadow: 0 1px 5px @themeColor;
-        overflow: hidden;
-        word-wrap: break-word;
-      }
-      &.left {
-        justify-content: flex-start;
-        left: 0;
-        span {
-          border-radius: 0 15px 15px 15px;
-        }
-      }
-      &.right {
-        justify-content: flex-end;
-        right: 0;
-        &:before {
-          content: '红碧';
-        }
-        span {
-          color: #fcfaf2;
-          background: @themeColor; // 红碧
-          border-radius: 15px 0 15px 15px;
-        }
-      }
-    }
-  }
   .title {
     background: linear-gradient(to right, #7b90d2, #2ea9df, #7b90d2);
     color: #fff;
@@ -178,6 +136,30 @@ export default class Main extends Vue {
     box-shadow: 0 0 5px #f1f1f1;
     border-radius: 2px;
     text-align: center;
+    position: relative;
+    font-weight: 800;
+    font-size: 16px;
+    i {
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 45px;
+      background-image: url('../assets/images/share.svg');
+      background-size: 22px;
+      background-position: center, center;
+      background-repeat: no-repeat;
+      cursor: pointer;
+    }
+  }
+  .link {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    border: none;
+    position: absolute;
+    z-index: -10;
   }
   .talk {
     position: absolute;
@@ -235,47 +217,6 @@ export default class Main extends Vue {
     box-shadow: 0 0 3px @themeColor;
     border-top-left-radius: 4px;
     border-top-right-radius: 4px;
-  }
-  .dot {
-    position: relative;
-    display: inline-block;
-    width: 10px;
-    height: 10px;
-    background: @themeColor;
-    border-radius: 50%;
-    transform-origin: 50% 50%;
-    animation: dotZoomIn 1.4s infinite;
-    &:nth-child(1) {
-      animation-delay: -0.32s;
-    }
-
-    &:nth-child(2) {
-      animation-delay: -0.16s;
-    }
-
-    & + .dot {
-      margin-left: 5px;
-    }
-    @keyframes dotZoomIn {
-      from,
-      40%,
-      80%,
-      100% {
-        animation-timing-function: ease-in-out;
-      }
-      from {
-        transform: scale(0);
-      }
-      40% {
-        transform: scale(1);
-      }
-      80% {
-        transform: scale(0);
-      }
-      100% {
-        transform: scale(0);
-      }
-    }
   }
 }
 </style>

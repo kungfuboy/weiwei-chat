@@ -1,0 +1,56 @@
+.chat-list {
+  padding: 0;
+  font-size: 13px;
+  margin: 0;
+  height: 100%;
+  overflow: auto;
+  padding: 0 15px;
+  box-sizing: border-box;
+  flex: 1;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  li {
+    list-style: none;
+    display: flex;
+    overflow: auto;
+    padding: 15px 0 10px 0;
+    position: relative;
+    &:before {
+      position: absolute;
+      top: 0;
+      font-size: 12px;
+      color: #006284; // 缥
+      z-index: 5;
+      display: block;
+      width: auto;
+    }
+    > span {
+      padding: 10px 15px;
+      max-width: 65%;
+      display: inline-block;
+      box-shadow: 0 1px 5px @themeColor;
+      overflow: hidden;
+      word-wrap: break-word;
+    }
+    &.left {
+      justify-content: flex-start;
+      left: 0;
+      span {
+        border-radius: 0 15px 15px 15px;
+      }
+    }
+    &.right {
+      justify-content: flex-end;
+      right: 0;
+      &:before {
+        content: '红碧';
+      }
+      span {
+        color: #fcfaf2;
+        background: @themeColor; // 红碧
+        border-radius: 15px 0 15px 15px;
+      }
+    }
+  }
+}
