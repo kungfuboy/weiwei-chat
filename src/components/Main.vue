@@ -22,18 +22,23 @@
    <textarea id="link" class="link"></textarea>
     <div class="restartAsk" v-show="restart">
       <section>
-        <span>欢迎回来</span>
-        <span>是否从上次的场景继续？</span>
-        <button type="button" @click="start(1)">是的，继续</button>
+        <span>{{ this.anchor ? '欢迎' : '回来啦？'}}</span>
+        <span>{{ this.anchor ? '是否载入分享场景' : '从上次的场景继续？'}}</span>
+        <button type="button" @click="start(1)">是的，{{ this.anchor ? '载入' : '继续' }}</button>
         <button type="button" @click="start(0)">重新开始</button>
       </section>
     </div>
+    <transition name="slide-fade">
+      <span class="toast" v-show="toastStatus">复制成功</span>
+    </transition>
   </section>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 const dataJSON: any = require('@/assets/data').default
+
+const initKey = '0000'
 
 @Component
 export default class Main extends Vue {
@@ -44,14 +49,30 @@ export default class Main extends Vue {
   private inputing: boolean = false
   private restart: boolean = false
   private key: string | null = ''
+  private anchor = ''
+  private toastStatus = false
 
   private mounted() {
-    this.key = window.localStorage.getItem('#kungfu')
-    if (this.key) {
-      // 询问是否重新开始
+    const host = window.location.href
+    const msgObj = host.split('?')[1]
+    const queryArr = msgObj ? msgObj.split('&') : []
+    const data: any = {}
+    queryArr.forEach(item => {
+      const arr: any = item.split('=')
+      data[arr[0]] = arr[1]
+    })
+    if (data.anchor) {
+      // 如果链接中包含分享key则从分享场景开始
+      this.key = this.anchor = data.anchor
       this.restart = true
     } else {
-      this.awswerList('0000')
+      this.key = window.localStorage.getItem('#kungfu')
+      if (this.key) {
+        // 询问是否重新开始
+        this.restart = true
+      } else {
+        this.awswerList(initKey)
+      }
     }
   }
 
@@ -67,7 +88,7 @@ export default class Main extends Vue {
       this.awswerList(this.key)
     } else {
       // 重新开始
-      this.awswerList('0000')
+      this.awswerList(initKey)
     }
   }
 
@@ -88,20 +109,25 @@ export default class Main extends Vue {
     // 回答处理
     window.localStorage.setItem('#kungfu', data)
 
-    this.options = dataJSON[data].req
+    if (dataJSON[data]) {
+      this.options = dataJSON[data].req
 
-    const resData = dataJSON[data].res
-    const len = resData.length - 1
-    let i = 0
-    const timer = setInterval(() => {
-      this.pushData(resData[i])
-      if (i >= len) {
-        clearInterval(timer)
-        this.inputing = false // 非输入状态
-      }
-      this.updateScroll()
-      i++
-    }, 2500)
+      const resData = dataJSON[data].res
+      const len = resData.length - 1
+      let i = 0
+      const timer = setInterval(() => {
+        this.pushData(resData[i])
+        if (i >= len) {
+          clearInterval(timer)
+          this.inputing = false // 非输入状态
+        }
+        this.updateScroll()
+        i++
+      }, 2500)
+    } else {
+      // 找不到key
+      this.awswerList(initKey)
+    }
   }
 
   private pushData(data: any): void {
@@ -110,12 +136,19 @@ export default class Main extends Vue {
 
   private shareLink(): void {
     // 生成拼接链接
-    const link = 'www'
+    const host = window.location.host + window.location.pathname
+    const key = window.localStorage.getItem('#kungfu')
+    const link = `${host}?anchor=${key}`
     // 复制到剪贴板
     const input: any = document.getElementById('link')
     input.value = link // 修改文本框的内容
     input.select() // 选中文本
     document.execCommand('copy') // 执行浏览器复制命令
+    this.toastStatus = true
+    setTimeout(() => {
+      this.toastStatus = false
+      console.log(this.toastStatus)
+    }, 1000)
     console.log('复制成功')
   }
 
@@ -187,6 +220,18 @@ export default class Main extends Vue {
     border: none;
     position: absolute;
     z-index: -10;
+  }
+  .toast {
+    display: inline-block;
+    position: absolute;
+    left: 50%;
+    bottom: 15%;
+    transform: translate(-50%, -50%);
+    font-size: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 6px 12px;
+    border-radius: 4px;
+    color: #fff;
   }
   .talk {
     position: absolute;
