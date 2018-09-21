@@ -1,6 +1,6 @@
 <template>
   <section class="content">
-    <div class="title">{{inputing ? '对方正在输入……' : '武协小筑'}}<i @click="shareLink()"></i></div>
+    <div class="title">{{inputing ? 'Ta正在输入' : '天下会'}}</div>
     <div class="talk" v-show="talkShow" @click="talkShow = false">
       <ul :class="{active: talkShow}">
         <li v-for="(item, index) in options" :key="index" @click="talkData(item)">{{item.value}}</li>
@@ -28,9 +28,6 @@
         <button type="button" @click="start(0)">重新开始</button>
       </section>
     </div>
-    <transition name="slide-fade">
-      <span class="toast" v-show="toastStatus">复制成功</span>
-    </transition>
   </section>
 </template>
 
@@ -109,6 +106,8 @@ export default class Main extends Vue {
     // 回答处理
     window.localStorage.setItem('#kungfu', data)
 
+    this.setLink(data)
+
     if (dataJSON[data]) {
       this.options = dataJSON[data].req
 
@@ -134,22 +133,13 @@ export default class Main extends Vue {
     this.talkArr.push(data)
   }
 
-  private shareLink(): void {
+  private setLink(data: string): void {
     // 生成拼接链接
-    const host = window.location.host + window.location.pathname
-    const key = window.localStorage.getItem('#kungfu')
-    const link = `${host}?anchor=${key}`
-    // 复制到剪贴板
-    const input: any = document.getElementById('link')
-    input.value = link // 修改文本框的内容
-    input.select() // 选中文本
-    document.execCommand('copy') // 执行浏览器复制命令
-    this.toastStatus = true
-    setTimeout(() => {
-      this.toastStatus = false
-      console.log(this.toastStatus)
-    }, 1000)
-    console.log('复制成功')
+    const state = {
+      title: '',
+      url: window.location.href.split('?')[0]
+    }
+    history.pushState(state, '', `?anchor=${data}`)
   }
 
   private updateScroll(): void {
@@ -199,18 +189,6 @@ export default class Main extends Vue {
     position: relative;
     font-weight: 800;
     font-size: 16px;
-    i {
-      position: absolute;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      width: 45px;
-      background-image: url('../assets/images/share.svg');
-      background-size: 22px;
-      background-position: center, center;
-      background-repeat: no-repeat;
-      cursor: pointer;
-    }
   }
   .link {
     width: 0;
@@ -220,18 +198,6 @@ export default class Main extends Vue {
     border: none;
     position: absolute;
     z-index: -10;
-  }
-  .toast {
-    display: inline-block;
-    position: absolute;
-    left: 50%;
-    bottom: 15%;
-    transform: translate(-50%, -50%);
-    font-size: 10px;
-    background: rgba(0, 0, 0, 0.6);
-    padding: 6px 12px;
-    border-radius: 4px;
-    color: #fff;
   }
   .talk {
     position: absolute;
