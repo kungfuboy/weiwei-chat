@@ -20,6 +20,14 @@
     </ul>
     <div class="input" @click="saySome">{{inputing ? '对方打字中……' : '说点什么吧...'}}</div>
    <textarea id="link" class="link"></textarea>
+    <div class="restartAsk" v-show="restart">
+      <section>
+        <span>欢迎回来</span>
+        <span>是否从上次的场景继续？</span>
+        <button type="button" @click="start(1)">是的，继续</button>
+        <button type="button" @click="start(0)">重新开始</button>
+      </section>
+    </div>
   </section>
 </template>
 
@@ -34,20 +42,33 @@ export default class Main extends Vue {
   private talkArr: any = []
   private options: any = []
   private inputing: boolean = false
+  private restart: boolean = false
+  private key: string | null = ''
 
   private mounted() {
-    setTimeout(() => {
-      const key: string = '0000'
-      dataJSON[key].res.forEach((item: any) => {
-        this.talkArr.push(item)
-      })
-      this.options = dataJSON[key].req
-    }, 1600)
+    this.key = window.localStorage.getItem('#kungfu')
+    if (this.key) {
+      // 询问是否重新开始
+      this.restart = true
+    } else {
+      this.awswerList('0000')
+    }
   }
 
   // methods
   private saySome(): void {
     !this.inputing && (this.talkShow = true)
+  }
+
+  private start(n: number): void {
+    this.restart = false
+    if (n) {
+      // 继续
+      this.awswerList(this.key)
+    } else {
+      // 重新开始
+      this.awswerList('0000')
+    }
   }
 
   private talkData(data: any): void {
@@ -60,11 +81,16 @@ export default class Main extends Vue {
       value: data.value
     })
     this.updateScroll()
+    this.awswerList(data.next)
+  }
 
+  private awswerList(data: any) {
     // 回答处理
-    this.options = dataJSON[data.next].req
+    window.localStorage.setItem('#kungfu', data)
 
-    const resData = dataJSON[data.next].res
+    this.options = dataJSON[data].req
+
+    const resData = dataJSON[data].res
     const len = resData.length - 1
     let i = 0
     const timer = setInterval(() => {
@@ -75,7 +101,7 @@ export default class Main extends Vue {
       }
       this.updateScroll()
       i++
-    }, 3000)
+    }, 2500)
   }
 
   private pushData(data: any): void {
@@ -113,6 +139,7 @@ export default class Main extends Vue {
 @import '../assets/styles/chat.less';
 @import '../assets/styles/peopleChat.less';
 @import '../assets/styles/animate.less';
+@import '../assets/styles/restartAsk.less';
 
 .content {
   margin: auto;
