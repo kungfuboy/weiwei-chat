@@ -1,16 +1,16 @@
 <template>
   <section class="content">
-    <div class="title">{{inputing ? 'Ta正在输入' : '天下会'}}</div>
+    <div class="title">{{inputing ? 'Ta正在输入' : '威威单车'}}</div>
     <div class="talk" v-show="talkShow" @click="talkShow = false">
       <ul :class="{active: talkShow}">
         <li v-for="(item, index) in options" :key="index" @click="talkData(item)">{{item.value}}</li>
       </ul>
     </div>
     <ul class="chat-list" ref="chat">
-      <li v-for="(item, index) in talkArr" :class="item.user ? item.user + ' left' : 'right'" :key="index">
+      <li v-for="(item, index) in talkArr" :class="item.uid ? item.uid + ' left' : 'right'" :key="index">
         <span>{{item.value}}</span>
       </li>
-      <li class="left wish" v-show="inputing">
+      <li class="left typing" v-show="inputing">
         <span>
           <i class="dot"></i>
           <i class="dot"></i>
@@ -35,7 +35,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 const dataJSON: any = require('@/assets/data').default
 
-const initKey = '0000'
+const initKey = '1537613985485'
 
 @Component
 export default class Main extends Vue {
@@ -63,7 +63,7 @@ export default class Main extends Vue {
       this.key = this.anchor = data.anchor
       this.restart = true
     } else {
-      this.key = window.localStorage.getItem('#kungfu')
+      this.key = window.localStorage.getItem('#weiwei')
       if (this.key) {
         // 询问是否重新开始
         this.restart = true
@@ -104,7 +104,7 @@ export default class Main extends Vue {
 
   private awswerList(data: any) {
     // 回答处理
-    window.localStorage.setItem('#kungfu', data)
+    window.localStorage.setItem('#weiwei', data)
 
     this.setLink(data)
 
